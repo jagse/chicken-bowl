@@ -4,10 +4,12 @@ const int HEATER_RELAY_PIN = 5;  // Digital pin for relay control
 
 void heaterOn() {
   digitalWrite(HEATER_RELAY_PIN, HIGH);
+  digitalWrite(LED_BUILTIN, HIGH);
 }
 
 void heaterOff() {
   digitalWrite(HEATER_RELAY_PIN, LOW);
+  digitalWrite(LED_BUILTIN, LOW);
 }
 
 void setup() {
@@ -18,8 +20,8 @@ void setup() {
 }
 
 void loop() {
-  digitalWrite(LED_BUILTIN, HIGH);  // LED on
-  delay(5000);
-  digitalWrite(LED_BUILTIN, LOW);   // LED off
-  delay(5000);
+  heaterOff();
+  delay(20000);
+  heaterOn();
+  delay(20000);
 }

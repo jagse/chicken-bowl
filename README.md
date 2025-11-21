@@ -17,4 +17,9 @@ When the temperatur drops it is necessary o keep the water at a configurable tem
 
 - Heat Pad 12 V
 - Relais 5V -> 12V
+  - DC+ => Arduino 5V
+  - DC- => Arduino GND
+  - IN => D5 
+  - COM => 12V +
+  - NO (normally open == normally no current) => HEAT PAD (+)
 - Temperature Probe + Controller
