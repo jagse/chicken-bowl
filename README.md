@@ -10,16 +10,25 @@ This is achieved by pumping water into the bowl in a configurable interval such 
 We use a pump that consumes a voltage of 5V. 
 
 - Water pump 6V
+- Dc - DC bucket!
+- MOSFET 
+  - VIN+ => INPUT+
+  - VIN- => INPUT-
+  - OUT+ => OUTPUT+
+  - OUT- => OUTPUT-
+  - PWD => D7
+  - GND => GND
 
 ### Heat water during the winter
 
 When the temperatur drops it is necessary o keep the water at a configurable temperature and heat it when it goes below the threshold. We use a heat pad that needs 12 V and therefor is controlled via relais. Additionally we need to frquently (every 5 min) read the temperature via digital pin. 
 
 - Heat Pad 12 V
-- Relais 5V -> 12V
-  - DC+ => Arduino 5V
-  - DC- => Arduino GND
-  - IN => D5 
-  - COM => 12V +
-  - NO (normally open == normally no current) => HEAT PAD (+)
+- MOSFET 
+  - VIN+ => INPUT+
+  - VIN- => INPUT-
+  - OUT+ => OUTPUT+
+  - OUT- => OUTPUT-
+  - PWD => D7
+  - GND => GND
 - Temperature Probe + Controller
