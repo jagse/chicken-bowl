@@ -12,12 +12,12 @@ const float TEMP_TOO_LOW = 10;
 const float TEMP_TOO_HIGH = 15;  
 const int TEN_SECONDS = 10000;  // 10 seconds in milliseconds
 
-const unsigned long TEMP_READ_INTERVAL = TEN_SECONDS * 6;
+const unsigned long TEMP_READ_INTERVAL = 60000;  // Read temperature every 60 seconds
 unsigned long lastTempRead = 0;
 
 // Pump configuration
-const unsigned long PUMP_INTERVAL = TEN_SECONDS;  // How often to pump in millis
-const unsigned long PUMP_DURATION = 1000;  // How long to pump each time in millis
+const unsigned long PUMP_INTERVAL = 60000; //3600000;  // How often to pump in millis (1 hour)
+const unsigned long PUMP_DURATION = TEN_SECONDS;  // How long to pump each time in millis
 unsigned long lastPumpStart = 0;
 bool pumpRunning = false;
 
@@ -33,6 +33,29 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 float currentTemp = 0.0;
 bool heaterState = false;
+
+void updateDisplay() {
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+
+  // Display temperature
+  display.setCursor(0, 0);
+  display.print("Temp: ");
+  display.print(currentTemp, 1);
+  display.println(" C");
+
+  // Display pump and heater state on same line
+  display.setCursor(0, 12);
+  display.print("Pump: ");
+  display.print(pumpRunning ? "ON" : "OFF");
+
+  display.setCursor(0, 24);
+  display.print("Heater: ");
+  display.print(heaterState ? "ON" : "OFF");
+
+  display.display();
+}
 
 void heaterOn() {
   digitalWrite(HEATER_PIN, HIGH);
@@ -74,29 +97,6 @@ void runPump(unsigned long currentMillis) {
     Serial.println("Pump stopped");
     updateDisplay();
   }
-}
-
-void updateDisplay() {
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-
-  // Display temperature
-  display.setCursor(0, 0);
-  display.print("Temp: ");
-  display.print(currentTemp, 1);
-  display.println(" C");
-
-  // Display pump and heater state on same line
-  display.setCursor(0, 12);
-  display.print("Pump: ");
-  display.print(pumpRunning ? "ON" : "OFF");
-
-  display.setCursor(0, 24);
-  display.print("Heater: ");
-  display.print(heaterState ? "ON" : "OFF");
-
-  display.display();
 }
 
 void runHeating(unsigned long currentMillis) {
