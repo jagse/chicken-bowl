@@ -11,13 +11,12 @@ const int TEMP_SENSOR_PIN = 3;  // Digital pin for DS18B20 temperature sensor
 const float TEMP_TOO_LOW = 10;  
 const float TEMP_TOO_HIGH = 15;  
 const int TEN_SECONDS = 10000;  // 10 seconds in milliseconds
-const int ONE_MINUTE = 10000;
 
-const unsigned long TEMP_READ_INTERVAL = ONE_MINUTE;  // Read temperature every 60 seconds
+const unsigned long TEMP_READ_INTERVAL = 60000;  // Read temperature every 60 seconds
 unsigned long lastTempRead = 0;
 
 // Pump configuration
-const unsigned long PUMP_INTERVAL = ONE_MINUTE; //3600000;  // How often to pump in millis (1 hour)
+const unsigned long PUMP_INTERVAL = 300000; //3600000;  // How often to pump in millis (1 hour)
 const unsigned long PUMP_DURATION = TEN_SECONDS;  // How long to pump each time in millis
 unsigned long lastPumpStart = 0;
 bool pumpRunning = false;
