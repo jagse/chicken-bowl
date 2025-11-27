@@ -39,16 +39,45 @@ void updateDisplay() {
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
 
-  // Display temperature
+  // Display temperature with countdown
   display.setCursor(0, 0);
   display.print("Temp: ");
   display.print(currentTemp, 1);
-  display.println(" C");
+  display.print("C -> ");
 
-  // Display pump and heater state on same line
+  unsigned long timeSinceTempRead = millis() - lastTempRead;
+  unsigned long timeUntilNextRead = TEMP_READ_INTERVAL - timeSinceTempRead;
+  unsigned long secondsUntilNextRead = timeUntilNextRead / 1000;
+  unsigned long minutesUntilNextRead = secondsUntilNextRead / 60;
+  unsigned long remainingSecondsTemp = secondsUntilNextRead % 60;
+
+  if (minutesUntilNextRead > 0) {
+    display.print(minutesUntilNextRead);
+    display.print("m ");
+  }
+  display.print(remainingSecondsTemp);
+  display.print("s");
+
+  // Display pump state with countdown
   display.setCursor(0, 12);
   display.print("Pump: ");
   display.print(pumpRunning ? "ON" : "OFF");
+
+  if (!pumpRunning) {
+    display.print(" -> ");
+    unsigned long timeSinceStart = millis() - lastPumpStart;
+    unsigned long timeUntilNext = PUMP_INTERVAL - timeSinceStart;
+    unsigned long secondsUntilNext = timeUntilNext / 1000;
+    unsigned long minutesUntilNext = secondsUntilNext / 60;
+    unsigned long remainingSeconds = secondsUntilNext % 60;
+
+    if (minutesUntilNext > 0) {
+      display.print(minutesUntilNext);
+      display.print("m ");
+    }
+    display.print(remainingSeconds);
+    display.print("s");
+  }
 
   display.setCursor(0, 24);
   display.print("Heater: ");
@@ -89,13 +118,13 @@ void runPump(unsigned long currentMillis) {
     pumpRunning = true;
     lastPumpStart = currentMillis;
     Serial.println("Pump started");
-    updateDisplay();
+    
   } else if (pumpRunning && (currentMillis - lastPumpStart >= PUMP_DURATION)) {
     // Stop pumping after duration
     pumpOff();
     pumpRunning = false;
     Serial.println("Pump stopped");
-    updateDisplay();
+    
   }
 }
 
@@ -115,7 +144,7 @@ void runHeating(unsigned long currentMillis) {
       Serial.println("Heater OFF");
     }
 
-    updateDisplay();
+    
   }
 }
 
@@ -147,4 +176,5 @@ void loop() {
 
   runPump(currentMillis);
   runHeating(currentMillis);
+  updateDisplay();
 }
