@@ -8,12 +8,16 @@
 const int HEATER_PIN = 5;  // Digital pin for relay control
 const int PUMP_PIN = 7;  // Digital pin for water pump control
 const int TEMP_SENSOR_PIN = 3;  // Digital pin for DS18B20 temperature sensor
-const float TEMP_TOO_LOW = 10;  
-const float TEMP_TOO_HIGH = 15;  
+const float TEMP_TOO_LOW = 8;
+const float TEMP_TOO_HIGH = 12;  
 const int TEN_SECONDS = 10000;  // 10 seconds in milliseconds
 
 const unsigned long TEMP_READ_INTERVAL = 60000;  // Read temperature every 60 seconds
 unsigned long lastTempRead = 0;
+
+// Display update interval
+const unsigned long DISPLAY_UPDATE_INTERVAL = 1000;  // Update display every 1 second
+unsigned long lastDisplayUpdate = 0;
 
 // Pump configuration
 const unsigned long PUMP_INTERVAL = 300000; //3600000;  // How often to pump in millis (1 hour)
@@ -118,13 +122,23 @@ void runPump(unsigned long currentMillis) {
     pumpRunning = true;
     lastPumpStart = currentMillis;
     Serial.println("Pump started");
-    
+
+    // Re-initialize display after MOSFET switching
+    delay(50);
+    display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS);
+    display.clearDisplay();
+
   } else if (pumpRunning && (currentMillis - lastPumpStart >= PUMP_DURATION)) {
     // Stop pumping after duration
     pumpOff();
     pumpRunning = false;
     Serial.println("Pump stopped");
-    
+
+    // Re-initialize display after MOSFET switching
+    delay(50);
+    display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS);
+    display.clearDisplay();
+
   }
 }
 
@@ -176,5 +190,10 @@ void loop() {
 
   runPump(currentMillis);
   runHeating(currentMillis);
-  updateDisplay();
+
+  // Update display at regular intervals
+  if (currentMillis - lastDisplayUpdate >= DISPLAY_UPDATE_INTERVAL) {
+    lastDisplayUpdate = currentMillis;
+    updateDisplay();
+  }
 }
