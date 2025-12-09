@@ -8,8 +8,8 @@
 const int HEATER_PIN = 5;  // Digital pin for relay control
 const int PUMP_PIN = 7;  // Digital pin for water pump control
 const int TEMP_SENSOR_PIN = 3;  // Digital pin for DS18B20 temperature sensor
-const float TEMP_TOO_LOW = 8;
-const float TEMP_TOO_HIGH = 12;  
+const float TEMP_TOO_LOW = 7;
+const float TEMP_TOO_HIGH = 10;  
 const int TEN_SECONDS = 10000;  // 10 seconds in milliseconds
 
 const unsigned long TEMP_READ_INTERVAL = 60000;  // Read temperature every 60 seconds
@@ -20,8 +20,8 @@ const unsigned long DISPLAY_UPDATE_INTERVAL = 1000;  // Update display every 1 s
 unsigned long lastDisplayUpdate = 0;
 
 // Pump configuration
-const unsigned long PUMP_INTERVAL = 300000; //3600000;  // How often to pump in millis (1 hour)
-const unsigned long PUMP_DURATION = TEN_SECONDS;  // How long to pump each time in millis
+const unsigned long PUMP_INTERVAL = 60000; //3600000;  // How often to pump in millis (1 hour)
+const unsigned long PUMP_DURATION = 30000;  // How long to pump each time in millis
 unsigned long lastPumpStart = 0;
 bool pumpRunning = false;
 
@@ -67,7 +67,14 @@ void updateDisplay() {
   display.print("Pump: ");
   display.print(pumpRunning ? "ON" : "OFF");
 
-  if (!pumpRunning) {
+  if (pumpRunning) {
+    display.print(" -> ");
+    unsigned long timeSincePumpOn = millis() - lastPumpStart;
+    unsigned long timeUntilOff = PUMP_DURATION - timeSincePumpOn;
+    unsigned long secondsUntilOff = timeUntilOff / 1000;
+    display.print(secondsUntilOff);
+    display.print("s");
+  } else {
     display.print(" -> ");
     unsigned long timeSinceStart = millis() - lastPumpStart;
     unsigned long timeUntilNext = PUMP_INTERVAL - timeSinceStart;
