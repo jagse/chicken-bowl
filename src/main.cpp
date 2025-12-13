@@ -20,8 +20,8 @@ const unsigned long DISPLAY_UPDATE_INTERVAL = 1000;  // Update display every 1 s
 unsigned long lastDisplayUpdate = 0;
 
 // Pump configuration
-const unsigned long PUMP_INTERVAL = 60000; //3600000;  // How often to pump in millis (1 hour)
-const unsigned long PUMP_DURATION = 30000;  // How long to pump each time in millis
+const unsigned long PUMP_INTERVAL = 3600000;  // How often to pump in millis (1 hour)
+const unsigned long PUMP_DURATION = 60000;  // How long to pump each time in millis
 unsigned long lastPumpStart = 0;
 bool pumpRunning = false;
 
