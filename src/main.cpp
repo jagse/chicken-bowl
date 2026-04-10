@@ -9,7 +9,8 @@ const int HEATER_PIN = 5;  // Digital pin for relay control
 const int PUMP_PIN = 7;  // Digital pin for water pump control
 const int TEMP_SENSOR_PIN = 3;  // Digital pin for DS18B20 temperature sensor
 const float TEMP_TOO_LOW = 7;
-const float TEMP_TOO_HIGH = 10;  
+const float TEMP_TOO_HIGH = 10;
+const float TEMP_SAFETY_MIN = -25;  // Below this, assume sensor fault and disable heater
 const int TEN_SECONDS = 10000;  // 10 seconds in milliseconds
 
 const unsigned long TEMP_READ_INTERVAL = 60000;  // Read temperature every 60 seconds
@@ -157,7 +158,10 @@ void runHeating(unsigned long currentMillis) {
     Serial.print(currentTemp);
     Serial.println(" °C");
 
-    if (currentTemp <= TEMP_TOO_LOW) {
+    if (currentTemp == DEVICE_DISCONNECTED_C || isnan(currentTemp) || currentTemp < TEMP_SAFETY_MIN) {
+      heaterOff();
+      Serial.println("Heater OFF (invalid temperature reading)");
+    } else if (currentTemp <= TEMP_TOO_LOW) {
       heaterOn();
       Serial.println("Heater ON");
     } else if (currentTemp >= TEMP_TOO_HIGH) {
