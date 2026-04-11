@@ -23,8 +23,10 @@ unsigned long lastDisplayUpdate = 0;
 // Pump configuration
 const unsigned long PUMP_INTERVAL = 3600000;  // How often to pump in millis (1 hour)
 const unsigned long PUMP_DURATION = 60000;  // How long to pump each time in millis
+const unsigned long STARTUP_PUMP_DURATION = 300000;  // Pump for 5 minutes on boot
 unsigned long lastPumpStart = 0;
 bool pumpRunning = false;
+bool initialPumpPhase = false;
 
 OneWire oneWire(TEMP_SENSOR_PIN);
 DallasTemperature tempSensor(&oneWire);
@@ -136,10 +138,11 @@ void runPump(unsigned long currentMillis) {
     display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS);
     display.clearDisplay();
 
-  } else if (pumpRunning && (currentMillis - lastPumpStart >= PUMP_DURATION)) {
+  } else if (pumpRunning && (currentMillis - lastPumpStart >= (initialPumpPhase ? STARTUP_PUMP_DURATION : PUMP_DURATION))) {
     // Stop pumping after duration
     pumpOff();
     pumpRunning = false;
+    initialPumpPhase = false;
     Serial.println("Pump stopped");
 
     // Re-initialize display after MOSFET switching
@@ -181,7 +184,12 @@ void setup() {
   pinMode(PUMP_PIN, OUTPUT);
   tempSensor.begin();
   heaterOff();  // Ensure heat pad is OFF at startup
-  pumpOff();  // Ensure pump is OFF at startup
+
+  // Run pump for 5 minutes at boot to prime the system
+  pumpOn();
+  pumpRunning = true;
+  initialPumpPhase = true;
+  lastPumpStart = millis();
 
   // Initialize OLED display
   if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
